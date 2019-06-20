@@ -18,17 +18,29 @@ class Population(object):
         #   condition, if none is required, return true
         self.ShouldContinue = popSettings.ShouldContinue
 
+		#function for calculating indv Adaptation from given Genome, see indvSettings.InitGenome
+        self.Adaptation = popSettings.Adaptation
+
 
     def RunFor(popSize, indvSettings):
+        resume = []
+        
         oldGen = [Individual(indvSettings) for i in range(0,popSize)]
-        Log(genOld)
+        for indv in oldGen:
+            indv.Adaptation = self.Adaptation(indv.Genome)
+        resume.append(Log(genOld))
 
         newGen = Evolved(genOld)
-        Log(genNew)
+        for indv in newGen:
+            indv.Adaptation = self.Adaptation(indv.Genome)
+        resume.append(Log(genNew))
 
         gen = 1
         while gen < maxGenerations and ShouldContinue(oldGen, newGen):
             oldGen = newGen
             newGen = Evolved(oldGen)
-            Log(newGen)
-    
+            for indv in newGen:
+                indv.Adaptation = self.Adaptation(indv.Genome)
+            resume.append(Log(newGen))
+
+        return resume
